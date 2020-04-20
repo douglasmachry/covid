@@ -23,13 +23,12 @@ List<Coordinates> coordinates;
 List<Marker> allMarker = [];
 List<Placemark> allPlaceMarks = [];
 List<DropdownMenuItem> items = [];
-String selectedValue = 'Brazil';
+String selectedValue;
 String boxTitle = 'Title';
 String boxBody = 'Body';
 double pinPillPosition = -200;
 double widthSearchCountry = 1;
 bool _visible = false;
-
 
 class _MyAppState extends State<MyApp> {
   Future<Covid> futureCovid;
@@ -63,21 +62,30 @@ class _MyAppState extends State<MyApp> {
                 child: Text(word.country), value: word.country));
           });
 
-          return Text(
-            "Novos casos confirmados: " +
-                snapshot.data.global.newConfirmed.toString() +
-                "\nTotal de casos confirmados: " +
-                snapshot.data.global.totalConfirmed.toString() +
-                "\nNovas mortes: " +
-                snapshot.data.global.newDeaths.toString() +
-                "\nTotal de mortes: " +
-                snapshot.data.global.totalDeaths.toString() +
-                "\nPacientes curados: " +
-                snapshot.data.global.newRecovered.toString() +
-                "\nTotal de pacientes curados: " +
-                snapshot.data.global.totalRecovered.toString(),
-            style: TextStyle(backgroundColor: Colors.yellow),
-          );
+          return Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: Colors.yellow[100],
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        blurRadius: 20,
+                        offset: Offset.zero,
+                        color: Colors.black.withOpacity(0.5))
+                  ]),
+              child: Text(
+                "Novos casos confirmados: " +
+                    snapshot.data.global.newConfirmed.toString() +
+                    "\nTotal de casos confirmados: " +
+                    snapshot.data.global.totalConfirmed.toString() +
+                    "\nNovas mortes: " +
+                    snapshot.data.global.newDeaths.toString() +
+                    "\nTotal de mortes: " +
+                    snapshot.data.global.totalDeaths.toString() +
+                    "\nPacientes curados: " +
+                    snapshot.data.global.newRecovered.toString() +
+                    "\nTotal de pacientes curados: " +
+                    snapshot.data.global.totalRecovered.toString(),
+              ));
         } else if (snapshot.hasError) {
           print("${snapshot.error}");
         }
@@ -125,12 +133,25 @@ class _MyAppState extends State<MyApp> {
           searchHint: 'Selecione um país',
           onChanged: (value) {
             setState(() {
-              selectedValue = value;
-              changeMarker(value);
-              pinPillPosition = -200;
+              if (value != null) {
+                selectedValue = value;
+                changeMarker(value);
+                pinPillPosition = -200;
+              }
             });
           },
           isExpanded: false,
+          onClear: () {
+            setState(() {
+              selectedValue = null;
+            });
+          },
+          selectedValueWidgetFn: (item) {
+            return Container(
+                transform: Matrix4.translationValues(-10, 0, 0),
+                alignment: Alignment.centerLeft,
+                child: (Text(item.toString())));
+          },
         ));
 
     AnimatedPositioned box = AnimatedPositioned(
@@ -181,11 +202,10 @@ class _MyAppState extends State<MyApp> {
         width: widthSearchCountry,
         height: 45,
         child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                color: Colors.blue),
-            )
-    );
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              color: Colors.blue),
+        ));
 
     Widget floatingActionButton = FloatingActionButton(
       onPressed: () {
@@ -197,7 +217,6 @@ class _MyAppState extends State<MyApp> {
             widthSearchCountry = 300;
             _visible = true;
           }
-
         });
       },
       child: Icon(Icons.search),
