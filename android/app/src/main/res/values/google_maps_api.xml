@@ -1,0 +1,4 @@
+<resources>
+    <!-- Supply a new Google Maps key restricted to this Android app and signing certificate. -->
+    <string name="google_maps_key" translatable="false">YOUR_GOOGLE_MAPS_API_KEY</string>
+</resources>
